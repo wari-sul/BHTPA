@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  role      String   @default("user") // admin, user
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  billGenerationLogs BillGenerationLog[]
+  approvedPayments   Payment[]           @relation("ApprovedBy")
+
+  @@map("users")
+}
+
+model Client {
+  id             String   @id @default(uuid())
+  companyName    String
+  contactPerson  String
+  email          String   @unique
+  phone          String
+  address        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  contracts Contract[]
+
+  @@map("clients")
+}
+
+model Contract {
+  id                 String   @id @default(uuid())
+  clientId           String
+  contractNumber     String   @unique
+  startDate          DateTime
+  endDate            DateTime?
+  spaceInSqft        Float
+  rentRate           Float
+  serviceChargeRate  Float
+  status             String   @default("active") // active, inactive, terminated
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  client              Client                 @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  rateHistory         ContractRateHistory[]
+  billLedgers         BillLedger[]
+  payments            Payment[]
+  billGenerationLogs  BillGenerationLog[]
+
+  @@map("contracts")
+}
+
+model ContractRateHistory {
+  id                 String   @id @default(uuid())
+  contractId         String
+  rentRate           Float
+  serviceChargeRate  Float
+  effectiveDate      DateTime
+  createdAt          DateTime @default(now())
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@map("contract_rate_history")
+}
+
+model BillLedger {
+  id             String   @id @default(uuid())
+  contractId     String
+  billMonth      String   // Format: YYYY-MM
+  rentAmount     Float
+  serviceAmount  Float
+  monthlyTotal   Float
+  paidAmount     Float    @default(0)
+  paymentStatus  String   @default("unpaid") // unpaid, partial, paid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  contract Contract  @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@unique([contractId, billMonth])
+  @@map("bill_ledgers")
+}
+
+model Payment {
+  id            String    @id @default(uuid())
+  billLedgerId  String?
+  contractId    String
+  amount        Float
+  paymentDate   DateTime
+  paymentMethod String    // cash, check, bank_transfer
+  checkNumber   String?
+  checkImage    String?
+  status        String    @default("pending") // pending, approved, rejected
+  approvedBy    String?
+  approvedAt    DateTime?
+  createdAt     DateTime  @default(now())
+
+  billLedger BillLedger? @relation(fields: [billLedgerId], references: [id])
+  contract   Contract    @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  approver   User?       @relation("ApprovedBy", fields: [approvedBy], references: [id])
+
+  @@map("payments")
+}
+
+model BillGenerationLog {
+  id          String   @id @default(uuid())
+  contractId  String
+  billMonth   String   // Format: YYYY-MM
+  generatedBy String
+  pdfPath     String?
+  createdAt   DateTime @default(now())
+
+  contract  Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [generatedBy], references: [id])
+
+  @@map("bill_generation_logs")
+}
