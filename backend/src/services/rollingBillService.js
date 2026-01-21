@@ -3,6 +3,7 @@ const prisma = require('../config/database');
 /**
  * Calculate rolling arrears for a contract following FIFO principle
  * Returns array of unpaid/partial bills sorted by billMonth (oldest first)
+ * with rolling total calculation for "বকেয়া বিল" column
  */
 async function calculateRollingArrears(contractId) {
   const unpaidBills = await prisma.billLedger.findMany({
@@ -17,13 +18,21 @@ async function calculateRollingArrears(contractId) {
     }
   });
 
-  return unpaidBills.map(bill => ({
-    id: bill.id,
-    billMonth: bill.billMonth,
-    monthlyTotal: bill.monthlyTotal,
-    paidAmount: bill.paidAmount,
-    remainingAmount: bill.monthlyTotal - bill.paidAmount
-  }));
+  let runningTotal = 0; // This is the key for rolling calculation
+
+  return unpaidBills.map(bill => {
+    const remainingAmount = bill.monthlyTotal - bill.paidAmount;
+    runningTotal += remainingAmount; // Add to running total
+
+    return {
+      id: bill.id,
+      billMonth: bill.billMonth,
+      monthlyTotal: bill.monthlyTotal,
+      paidAmount: bill.paidAmount,
+      remainingAmount: remainingAmount,
+      rollingDue: runningTotal // This goes to "বকেয়া বিল" column
+    };
+  });
 }
 
 /**

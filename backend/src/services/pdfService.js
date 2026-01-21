@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const prisma = require('../config/database');
 const { calculateRollingArrears } = require('./rollingBillService');
+const { getLogoBase64 } = require('../utils/logoHelper');
 
 // Register Handlebars helpers
 require('../helpers/handlebarsHelpers');
@@ -49,6 +50,7 @@ async function generateInvoicePDF(contractId, billMonth, generatedBy) {
 
     // Prepare data
     const invoiceData = {
+      logo: getLogoBase64(),
       invoiceNumber: `INV-${contract.contractNumber}-${billMonth}`,
       invoiceDate: new Date().toLocaleDateString('en-GB'),
       billMonth: billMonth,
