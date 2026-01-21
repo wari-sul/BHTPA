@@ -27,6 +27,8 @@ async function calculateRollingArrears(contractId) {
     return {
       id: bill.id,
       billMonth: bill.billMonth,
+      rentAmount: bill.rentAmount,
+      serviceAmount: bill.serviceAmount,
       monthlyTotal: bill.monthlyTotal,
       paidAmount: bill.paidAmount,
       remainingAmount: remainingAmount,

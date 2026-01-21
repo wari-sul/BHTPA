@@ -250,8 +250,8 @@
           <td class="amount-col">{{formatBengaliNumber ../contract.rentRate}}</td>
           <td class="amount-col">{{formatBengaliNumber ../contract.serviceChargeRate}}</td>
           <td class="amount-col">{{formatBengaliNumber (add ../contract.rentRate ../contract.serviceChargeRate)}}</td>
-          <td class="amount-col">{{formatBengaliNumber (subtract monthlyTotal (subtract monthlyTotal paidAmount))}}</td>
-          <td class="amount-col">{{formatBengaliNumber (subtract monthlyTotal paidAmount)}}</td>
+          <td class="amount-col">{{formatBengaliNumber rentAmount}}</td>
+          <td class="amount-col">{{formatBengaliNumber serviceAmount}}</td>
           <td class="amount-col">{{formatBengaliNumber monthlyTotal}}</td>
           <td class="amount-col">{{formatBengaliNumber paidAmount}}</td>
           <td class="amount-col">{{formatBengaliNumber rollingDue}}</td>
