@@ -66,10 +66,13 @@ handlebars.registerHelper('formatYearBengali', function(dateString) {
 handlebars.registerHelper('formatBengaliNumber', function(number) {
   if (number === null || number === undefined) return '০';
   
+  // Check if number is an integer
+  const isInteger = Number.isInteger(number);
+  
   // Format with commas
   const formatted = number.toLocaleString('en-IN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    minimumFractionDigits: isInteger ? 0 : 2,
+    maximumFractionDigits: isInteger ? 0 : 2
   });
   
   // Convert to Bengali digits
