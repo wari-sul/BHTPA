@@ -4,10 +4,17 @@ const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Starting database seed...');
+  console.log('🌱 Starting database seed...');
+
+  // Get admin password from environment variable or use default (CHANGE IN PRODUCTION!)
+  const defaultPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'Admin@BHTPA2026';
+  
+  if (!process.env.ADMIN_DEFAULT_PASSWORD) {
+    console.warn('⚠️  WARNING: Using default admin password. Set ADMIN_DEFAULT_PASSWORD in .env for production!');
+  }
 
   // Create admin user
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  const hashedPassword = await bcrypt.hash(defaultPassword, 10);
   
   const admin = await prisma.user.upsert({
     where: { username: 'admin' },
@@ -19,7 +26,16 @@ async function main() {
       role: 'admin'
     }
   });
-  console.log('✓ Admin user created:', admin.username);
+  
+  console.log('✅ Admin user created/updated:');
+  console.log(`   Username: ${admin.username}`);
+  console.log(`   Role: ${admin.role}`);
+  console.log(`   Email: ${admin.email}`);
+  
+  if (!process.env.ADMIN_DEFAULT_PASSWORD) {
+    console.log(`   ⚠️  Default Password: Admin@BHTPA2026`);
+    console.log(`   🔐 CHANGE THIS IMMEDIATELY AFTER FIRST LOGIN!`);
+  }
 
   // Create regular user
   const userPassword = await bcrypt.hash('user123', 10);
@@ -170,9 +186,9 @@ async function main() {
   }
   console.log('✓ Bills created for contract:', contract2.contractNumber);
 
-  console.log('\n✅ Database seeded successfully!');
+  console.log('\n✅ Database seeding completed successfully!');
   console.log('\nLogin credentials:');
-  console.log('Admin - Username: admin, Password: admin123');
+  console.log('Admin - Username: admin, Password: ' + (process.env.ADMIN_DEFAULT_PASSWORD || 'Admin@BHTPA2026'));
   console.log('User  - Username: user, Password: user123');
 }
 
