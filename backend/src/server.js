@@ -12,6 +12,7 @@ const clientRoutes = require('./routes/clients');
 const contractRoutes = require('./routes/contracts');
 const billRoutes = require('./routes/bills');
 const paymentRoutes = require('./routes/payments');
+const usersRoutes = require('./routes/users');
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('/api/clients', clientRoutes);
 app.use('/api/contracts', contractRoutes);
 app.use('/api/bills', billRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/users', usersRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -68,6 +70,7 @@ app.listen(PORT, () => {
 ║   - Contracts: http://localhost:${PORT}/api/contracts         ║
 ║   - Bills: http://localhost:${PORT}/api/bills                 ║
 ║   - Payments: http://localhost:${PORT}/api/payments           ║
+║   - Users: http://localhost:${PORT}/api/users                 ║
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
   `);

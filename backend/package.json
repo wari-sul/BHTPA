@@ -3,13 +3,20 @@
   "version": "1.0.0",
   "description": "Bangladesh Hi-Tech Park Authority Billing System Backend",
   "main": "src/server.js",
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "seed": "node prisma/seed.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "node prisma/seed.js"
+    "prisma:seed": "node prisma/seed.js",
+    "db:migrate": "npx prisma migrate deploy",
+    "db:reset": "npx prisma migrate reset",
+    "db:studio": "npx prisma studio"
   },
   "keywords": [
     "billing",
