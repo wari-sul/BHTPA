@@ -185,6 +185,26 @@ router.delete('/:id', auth, adminAuth, async (req, res, next) => {
       });
     }
     
+    // Check if user to be deleted is an admin
+    const userToDelete = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true }
+    });
+    
+    if (userToDelete?.role === 'admin') {
+      // Count total admin users
+      const adminCount = await prisma.user.count({
+        where: { role: 'admin' }
+      });
+      
+      // Prevent deleting the last admin
+      if (adminCount <= 1) {
+        return res.status(400).json({
+          error: 'Cannot delete the last admin user'
+        });
+      }
+    }
+    
     await prisma.user.delete({
       where: { id: userId }
     });

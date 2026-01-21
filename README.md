@@ -87,8 +87,10 @@ Server runs on `http://localhost:5000`
 ## 🔑 Default Credentials
 
 After seeding the database:
-- **Admin**: username: `admin`, password: `admin123`
+- **Admin**: username: `admin`, password: Set via `ADMIN_DEFAULT_PASSWORD` env var (default: `Admin@BHTPA2026`)
 - **User**: username: `user`, password: `user123`
+
+⚠️ **IMPORTANT**: Change the admin password immediately after first login!
 
 ## 📊 API Endpoints
 
